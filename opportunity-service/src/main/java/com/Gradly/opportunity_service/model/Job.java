@@ -23,6 +23,7 @@ public class Job {
     private String location;
 
     private String postedBy;   // userId
+    private String postedByName;
 
     private LocalDateTime createdAt;
     private LocalDateTime deadline;

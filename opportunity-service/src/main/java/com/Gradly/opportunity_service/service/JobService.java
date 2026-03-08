@@ -1,5 +1,8 @@
 package com.Gradly.opportunity_service.service;
 
+import com.Gradly.opportunity_service.client.UserClient;
+import com.Gradly.opportunity_service.dto.CreateJobRequest;
+import com.Gradly.opportunity_service.dto.UserResponse;
 import com.Gradly.opportunity_service.model.Application;
 import com.Gradly.opportunity_service.model.Job;
 import com.Gradly.opportunity_service.repository.ApplicationRepository;
@@ -16,10 +19,22 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final ApplicationRepository applicationRepository;
+    private final UserClient userClient;
 
-    public Job createJob(Job job, String userId) {
+    public Job createJob(CreateJobRequest request, String userId) {
+
+        UserResponse user = userClient.getUser(userId);
+
+        Job job = new Job();
+        job.setTitle(request.getTitle());
+        job.setCompany(request.getCompany());
+        job.setDescription(request.getDescription());
+        job.setLocation(request.getLocation());
 
         job.setPostedBy(userId);
+        job.setPostedByName(user.getName());
+
+        job.setDeadline(request.getDeadline());
         job.setCreatedAt(LocalDateTime.now());
 
         return jobRepository.save(job);

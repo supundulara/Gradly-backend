@@ -9,7 +9,7 @@ import com.Gradly.post_service.models.Post;
 import com.Gradly.post_service.repository.CommentRepository;
 import com.Gradly.post_service.repository.LikeRepository;
 import com.Gradly.post_service.repository.PostRepository;
-import com.Gradly.post_service.utill.UserClient;
+import com.Gradly.post_service.client.UserClient;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

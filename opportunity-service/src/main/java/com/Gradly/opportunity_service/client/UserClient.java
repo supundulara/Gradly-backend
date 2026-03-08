@@ -1,6 +1,6 @@
-package com.Gradly.post_service.utill;
+package com.Gradly.opportunity_service.client;
 
-import com.Gradly.post_service.dto.UserResponse;
+import com.Gradly.opportunity_service.dto.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

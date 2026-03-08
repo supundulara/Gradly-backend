@@ -1,5 +1,6 @@
 package com.Gradly.opportunity_service.controller;
 
+import com.Gradly.opportunity_service.dto.CreateJobRequest;
 import com.Gradly.opportunity_service.model.Job;
 import com.Gradly.opportunity_service.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,12 @@ public class JobController {
 
     private final JobService jobService;
 
-    @PostMapping
+    @PostMapping()
     public Job createJob(
-            @RequestBody Job job,
+            @RequestBody CreateJobRequest request,
             @RequestHeader("X-User-Id") String userId
-    ){
-        return jobService.createJob(job, userId);
+    ) {
+        return jobService.createJob(request, userId);
     }
 
     @GetMapping
