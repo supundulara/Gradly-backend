@@ -4,5 +4,5 @@ import com.Gradly.post_service.models.Post;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface PostRepository extends MongoRepository<Post, String> {
-    long countByPostId(String postId);
+    long countById(String Id);
 }
