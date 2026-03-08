@@ -1,5 +1,6 @@
 package com.Gradly.gateway_service.filter;
 
+import com.Gradly.gateway_service.security.RoleRule;
 import com.Gradly.gateway_service.security.RoleValidator;
 import com.Gradly.gateway_service.security.RouteValidator;
 import io.jsonwebtoken.Claims;
@@ -26,6 +27,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
+        String method = exchange.getRequest().getMethod().name();
         String path = exchange.getRequest().getURI().getPath();
 
         if (routeValidator.isSecured.test(path)) {
@@ -52,19 +54,38 @@ public class JwtAuthenticationFilter implements GlobalFilter {
                 String userId = claims.getSubject();
                 String role = claims.get("role", String.class);
 
+                String routeKey = method + ":" + path;
+
                 // ROLE AUTHORIZATION
-                for (Map.Entry<String, List<String>> entry :
-                        RoleValidator.rolePermissions.entrySet()) {
+                for (RoleRule rule : RoleValidator.rules) {
 
-                    if (path.startsWith(entry.getKey())) {
+                    if (!method.equals(rule.method)) {
+                        continue;
+                    }
 
-                        if (!entry.getValue().contains(role)) {
+                    boolean match;
 
-                            exchange.getResponse()
-                                    .setStatusCode(HttpStatus.FORBIDDEN);
+                    if (rule.path.contains("*")) {
 
+                        String base = rule.path.replace("/*/apply", "");
+                        match = path.startsWith(base) && path.endsWith("/apply");
+
+                    } else {
+
+                        match = path.equals(rule.path) || path.startsWith(rule.path + "/");
+
+                    }
+
+                    if (match) {
+
+                        if (!rule.roles.contains(role)) {
+
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                             return exchange.getResponse().setComplete();
+
                         }
+
+                        break;
                     }
                 }
 

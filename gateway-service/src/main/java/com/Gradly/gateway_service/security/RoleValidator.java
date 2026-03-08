@@ -2,21 +2,34 @@ package com.Gradly.gateway_service.security;
 
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class RoleValidator {
 
-    public static final Map<String, List<String>> rolePermissions = Map.of(
+    public static final List<RoleRule> rules = List.of(
 
-            "/posts", List.of("student", "alumni", "admin"),
+            // POSTS
+            new RoleRule("POST", "/posts", List.of("student", "alumni", "admin")),
+            new RoleRule("GET", "/posts", List.of("student", "alumni", "admin")),
 
-            "/jobs", List.of("alumni", "admin"),
+            // JOBS
+            new RoleRule("POST", "/jobs", List.of("alumni", "admin")),
+            new RoleRule("GET", "/jobs", List.of("student", "alumni", "admin")),
 
-            "/events", List.of("admin"),
 
-            "/users", List.of("student", "alumni", "admin")
+
+            // APPLY JOB
+            new RoleRule("POST", "/jobs/*/apply", List.of("student", "alumni")),
+
+            // EVENTS
+            new RoleRule("POST", "/events", List.of("admin")),
+            new RoleRule("GET", "/events", List.of("student", "alumni", "admin")),
+
+            // USERS
+            new RoleRule("GET", "/users", List.of("student", "alumni", "admin")),
+            new RoleRule("PUT", "/users", List.of("student", "alumni", "admin"))
     );
-
 }
