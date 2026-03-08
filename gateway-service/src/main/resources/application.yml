@@ -21,7 +21,10 @@ spring:
           uri: lb://OPPORTUNITY-SERVICE
           predicates:
             - Path=/jobs/**,/events/**
-
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notifications/**
 eureka:
   client:
     service-url:
