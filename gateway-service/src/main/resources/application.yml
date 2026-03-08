@@ -20,7 +20,7 @@ spring:
         - id: opportunity-service
           uri: lb://OPPORTUNITY-SERVICE
           predicates:
-            - Path=/jobs/**
+            - Path=/jobs/**,/events/**
 
 eureka:
   client:

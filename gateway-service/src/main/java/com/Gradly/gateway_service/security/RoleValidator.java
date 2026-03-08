@@ -19,6 +19,10 @@ public class RoleValidator {
             new RoleRule("POST", "/jobs", List.of("alumni", "admin")),
             new RoleRule("GET", "/jobs", List.of("student", "alumni", "admin")),
 
+            //Events
+            new RoleRule("POST", "/events", List.of("alumni", "admin")),
+            new RoleRule("GET", "/events", List.of("student", "alumni", "admin")),
+
 
 
             // APPLY JOB
