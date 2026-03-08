@@ -9,8 +9,14 @@ import lombok.Data;
 @Builder
 public class EventNotificationMessage {
 
+    private String type;
+
     private String eventId;
-    private String title;
-    private String createdBy;
+    private String eventTitle;
+
+    private String creatorId;
     private String creatorName;
+
+    private String attendeeId;
+    private String attendeeName;
 }

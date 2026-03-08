@@ -43,8 +43,8 @@ public class EventService {
         eventPublisher.publishEvent(
                 EventNotificationMessage.builder()
                         .eventId(saved.getId())
-                        .title(saved.getTitle())
-                        .createdBy(saved.getCreatedBy())
+                        .eventTitle(saved.getTitle())
+                        .creatorId(saved.getCreatedBy())
                         .creatorName(user.getName())
                         .build()
         );
@@ -71,16 +71,52 @@ public class EventService {
             throw new RuntimeException("Already RSVPed");
         }
 
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        UserResponse attendee = userClient.getUser(userId);
+        UserResponse creator = userClient.getUser(event.getCreatedBy());
+
         EventRSVP rsvp = new EventRSVP();
         rsvp.setEventId(eventId);
         rsvp.setUserId(userId);
         rsvp.setCreatedAt(LocalDateTime.now());
 
         eventRSVPRepository.save(rsvp);
+
+        eventPublisher.publishEvent(
+                EventNotificationMessage.builder()
+                        .type("EVENT_RSVP")
+                        .eventId(event.getId())
+                        .eventTitle(event.getTitle())
+                        .creatorId(event.getCreatedBy())
+                        .creatorName(creator.getName())
+                        .attendeeId(userId)
+                        .attendeeName(attendee.getName())
+                        .build()
+        );
     }
     public void cancelRSVP(String eventId, String userId) {
 
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        UserResponse attendee = userClient.getUser(userId);
+        UserResponse creator = userClient.getUser(event.getCreatedBy());
+
         eventRSVPRepository.deleteByEventIdAndUserId(eventId, userId);
+
+        eventPublisher.publishEvent(
+                EventNotificationMessage.builder()
+                        .type("EVENT_RSVP_CANCELLED")
+                        .eventId(eventId)
+                        .eventTitle(event.getTitle())
+                        .creatorId(event.getCreatedBy())
+                        .creatorName(creator.getName())
+                        .attendeeId(userId)
+                        .attendeeName(attendee.getName())
+                        .build()
+        );
     }
     public List<UserResponse> getParticipants(String eventId) {
 

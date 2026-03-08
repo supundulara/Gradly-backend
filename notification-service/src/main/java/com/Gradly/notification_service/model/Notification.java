@@ -14,7 +14,9 @@ public class Notification {
 
     private String userId;
 
-    private String creatorName;
+    private String actorName;      // person who triggered action
+    private String creatorName;    // owner of content
+
     private String eventTitle;
 
     private String message;

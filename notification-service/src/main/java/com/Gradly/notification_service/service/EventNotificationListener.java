@@ -21,17 +21,32 @@ public class EventNotificationListener {
 
         Notification notification = new Notification();
 
-        notification.setUserId(message.getCreatedBy());
-        notification.setCreatorName(message.getCreatorName());
-        notification.setEventTitle(message.getTitle());
+        notification.setUserId(message.getCreatorId());
+        notification.setEventTitle(message.getEventTitle());
 
-        notification.setMessage("created a new event");
+        if ("EVENT_CREATED".equals(message.getType())) {
+
+            notification.setActorName(message.getCreatorName());
+            notification.setCreatorName(message.getCreatorName());
+            notification.setMessage("created a new event");
+
+        } else if ("EVENT_RSVP".equals(message.getType())) {
+
+            notification.setActorName(message.getAttendeeName());
+            notification.setCreatorName(message.getCreatorName());
+            notification.setMessage("is attending your event");
+
+        } else if ("EVENT_RSVP_CANCELLED".equals(message.getType())) {
+
+            notification.setActorName(message.getAttendeeName());
+            notification.setCreatorName(message.getCreatorName());
+            notification.setMessage("cancelled attendance for your event");
+
+        }
 
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 
         notificationRepository.save(notification);
-
-        System.out.println("Notification created for event: " + message.getTitle());
     }
 }
