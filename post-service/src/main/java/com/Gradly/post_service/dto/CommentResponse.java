@@ -1,30 +1,21 @@
-package com.Gradly.post_service.models;
+package com.Gradly.post_service.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "comments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Comment {
+public class CommentResponse {
 
-    @Id
     private String id;
-
     private String postId;
-
     private String userId;
     private String userName;
-
     private String content;
-
     private LocalDateTime createdAt;
+
 }

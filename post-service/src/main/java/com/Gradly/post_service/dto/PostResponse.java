@@ -11,6 +11,7 @@ public class PostResponse {
 
     private String id;
     private String authorId;
+    private String authorName;
     private String content;
     private String imageUrl;
     private LocalDateTime createdAt;

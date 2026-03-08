@@ -66,9 +66,12 @@ public class PostService {
     }
     public Comment addComment(String postId, String userId, String content){
 
+        UserResponse user = userClient.getUser(userId);
+
         Comment comment = Comment.builder()
                 .postId(postId)
                 .userId(userId)
+                .userName(user.getName())
                 .content(content)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -87,6 +90,7 @@ public class PostService {
                 .map(post -> PostResponse.builder()
                         .id(post.getId())
                         .authorId(post.getAuthorId())
+                        .authorName(post.getAuthorName())
                         .content(post.getContent())
                         .imageUrl(post.getImageUrl())
                         .createdAt(post.getCreatedAt())
@@ -104,6 +108,7 @@ public class PostService {
         return PostResponse.builder()
                 .id(post.getId())
                 .authorId(post.getAuthorId())
+                .authorName(post.getAuthorName())
                 .content(post.getContent())
                 .imageUrl(post.getImageUrl())
                 .createdAt(post.getCreatedAt())
