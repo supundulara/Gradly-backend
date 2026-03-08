@@ -22,10 +22,13 @@ public class CorsConfig {
             "http://127.0.0.1:*",
             "https://127.0.0.1:*"
         ));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("*"));
+        config.addAllowedMethod("*");          // allow all HTTP methods including POST, PUT, PATCH, DELETE, OPTIONS
+        config.addAllowedHeader("*");          // allow any header
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
+        // Optionally expose headers if your frontend needs them:
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Location");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

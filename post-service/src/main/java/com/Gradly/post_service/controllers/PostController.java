@@ -1,6 +1,7 @@
 package com.Gradly.post_service.controllers;
 
 import com.Gradly.post_service.dto.CommentRequest;
+import com.Gradly.post_service.dto.CreatePostRequest;
 import com.Gradly.post_service.dto.PostResponse;
 import com.Gradly.post_service.models.Comment;
 import com.Gradly.post_service.models.Post;
@@ -20,14 +21,12 @@ public class PostController {
     }
 
     // CREATE POST
-    @PostMapping
+    @PostMapping()
     public Post createPost(
-            @RequestBody Post post,
-            @RequestHeader("X-User-Id") String userId){
-
-        post.setAuthorId(userId);
-
-        return postService.createPost(post);
+            @RequestBody CreatePostRequest request,
+            @RequestHeader("X-User-Id") String userId
+    ) {
+        return postService.createPost(request, userId);
     }
 
     @GetMapping

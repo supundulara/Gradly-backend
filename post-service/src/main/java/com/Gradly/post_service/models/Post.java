@@ -20,6 +20,7 @@ public class Post {
     private String id;
 
     private String authorId;
+    private String authorName;
 
     private String content;
 

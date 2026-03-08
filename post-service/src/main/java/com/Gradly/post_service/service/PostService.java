@@ -1,12 +1,15 @@
 package com.Gradly.post_service.service;
 
+import com.Gradly.post_service.dto.CreatePostRequest;
 import com.Gradly.post_service.dto.PostResponse;
+import com.Gradly.post_service.dto.UserResponse;
 import com.Gradly.post_service.models.Comment;
 import com.Gradly.post_service.models.Like;
 import com.Gradly.post_service.models.Post;
 import com.Gradly.post_service.repository.CommentRepository;
 import com.Gradly.post_service.repository.LikeRepository;
 import com.Gradly.post_service.repository.PostRepository;
+import com.Gradly.post_service.utill.UserClient;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,15 +21,26 @@ public class PostService {
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final UserClient userClient;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, CommentRepository commentRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, CommentRepository commentRepository, UserClient userClient) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.commentRepository = commentRepository;
+        this.userClient = userClient;
     }
 
-    public Post createPost(Post post){
+    public Post createPost(CreatePostRequest request, String userId) {
+
+        UserResponse user = userClient.getUser(userId);
+
+        Post post = new Post();
+        post.setAuthorId(userId);
+        post.setAuthorName(user.getName());
+        post.setContent(request.getContent());
+        post.setImageUrl(request.getImageUrl());
         post.setCreatedAt(LocalDateTime.now());
+
         return postRepository.save(post);
     }
     public void likePost(String postId, String userId){
