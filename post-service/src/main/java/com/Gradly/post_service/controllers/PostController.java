@@ -1,5 +1,6 @@
 package com.Gradly.post_service.controllers;
 
+import com.Gradly.post_service.dto.PostResponse;
 import com.Gradly.post_service.models.Post;
 import com.Gradly.post_service.service.PostService;
 import org.springframework.web.bind.annotation.*;
@@ -16,30 +17,53 @@ public class PostController {
         this.postService = postService;
     }
 
+    // CREATE POST
     @PostMapping
-    public Post createPost(@RequestBody Post post){
+    public Post createPost(
+            @RequestBody Post post,
+            @RequestHeader("X-User-Id") String userId){
+
+        post.setAuthorId(userId);
+
         return postService.createPost(post);
     }
 
     @GetMapping
-    public List<Post> getAllPosts(){
+    public List<PostResponse> getAllPosts(){
         return postService.getAllPosts();
     }
 
+    // GET SINGLE POST
     @GetMapping("/{id}")
-    public Post getPostById(@PathVariable String id){
+    public PostResponse getPostById(@PathVariable String id){
         return postService.getPostById(id);
     }
 
+    // DELETE POST
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable String id){
-        postService.deletePost(id);
+    public void deletePost(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId){
+
+        postService.deletePost(id, userId);
     }
+
     @PostMapping("/{postId}/likes")
-    public void likePost(@PathVariable String postId, Authentication authentication){
+    public void likePost(
+            @PathVariable String postId,
+            @RequestHeader("X-User-Id") String userId){
 
-        String userId = authentication.getName();
+        postService.likePost(postId,userId);
+    }
+    @DeleteMapping("/{postId}/likes")
+    public void unlikePost(
+            @PathVariable String postId,
+            @RequestHeader("X-User-Id") String userId){
 
-        postService.likePost(postId, userId);
+        postService.unlikePost(postId,userId);
+    }
+    @GetMapping("/{postId}/likes/count")
+    public long getLikeCount(@PathVariable String postId){
+        return postService.getLikeCount(postId);
     }
 }

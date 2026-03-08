@@ -1,6 +1,9 @@
 package com.Gradly.post_service.service;
 
+import com.Gradly.post_service.dto.PostResponse;
+import com.Gradly.post_service.models.Like;
 import com.Gradly.post_service.models.Post;
+import com.Gradly.post_service.repository.LikeRepository;
 import com.Gradly.post_service.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,25 +14,81 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository) {
         this.postRepository = postRepository;
+        this.likeRepository = likeRepository;
     }
 
     public Post createPost(Post post){
         post.setCreatedAt(LocalDateTime.now());
         return postRepository.save(post);
     }
+    public void likePost(String postId, String userId){
 
-    public List<Post> getAllPosts(){
-        return postRepository.findAll();
+        if(likeRepository.findByPostIdAndUserId(postId, userId).isPresent()){
+            return;
+        }
+
+        Like like = Like.builder()
+                .postId(postId)
+                .userId(userId)
+                .build();
+
+        likeRepository.save(like);
+    }
+    public void unlikePost(String postId, String userId){
+
+        likeRepository.findByPostIdAndUserId(postId,userId)
+                .ifPresent(likeRepository::delete);
+    }
+    public long getLikeCount(String postId){
+        return likeRepository.countByPostId(postId);
     }
 
-    public Post getPostById(String id){
-        return postRepository.findById(id).orElse(null);
+    public List<PostResponse> getAllPosts(){
+
+        List<Post> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(post -> PostResponse.builder()
+                        .id(post.getId())
+                        .authorId(post.getAuthorId())
+                        .content(post.getContent())
+                        .imageUrl(post.getImageUrl())
+                        .createdAt(post.getCreatedAt())
+                        .likeCount(likeRepository.countByPostId(post.getId()))
+                        .build())
+                .toList();
     }
 
-    public void deletePost(String id){
-        postRepository.deleteById(id);
+    public PostResponse getPostById(String id){
+
+        Post post = postRepository.findById(id)
+                .orElseThrow();
+
+        long likeCount = likeRepository.countByPostId(id);
+
+        return PostResponse.builder()
+                .id(post.getId())
+                .authorId(post.getAuthorId())
+                .content(post.getContent())
+                .imageUrl(post.getImageUrl())
+                .createdAt(post.getCreatedAt())
+                .likeCount(likeCount)
+                .build();
+    }
+
+    public void deletePost(String postId, String userId){
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow();
+
+        if(!post.getAuthorId().equals(userId)){
+            throw new RuntimeException("Unauthorized");
+        }
+
+        postRepository.delete(post);
     }
 }
