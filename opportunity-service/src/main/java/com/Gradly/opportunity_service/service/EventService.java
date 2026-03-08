@@ -29,12 +29,14 @@ public class EventService {
 
         Event event = new Event();
 
+
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
         event.setLocation(request.getLocation());
         event.setEventDate(request.getEventDate());
         event.setCreatedBy(userId);
         event.setCreatedAt(LocalDateTime.now());
+        UserResponse user = userClient.getUser(userId);
 
         Event saved = eventRepository.save(event);
 
@@ -43,6 +45,7 @@ public class EventService {
                         .eventId(saved.getId())
                         .title(saved.getTitle())
                         .createdBy(saved.getCreatedBy())
+                        .creatorName(user.getName())
                         .build()
         );
 

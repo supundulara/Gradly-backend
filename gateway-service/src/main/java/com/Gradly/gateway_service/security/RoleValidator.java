@@ -23,14 +23,15 @@ public class RoleValidator {
             new RoleRule("POST", "/events", List.of("alumni", "admin")),
             new RoleRule("GET", "/events", List.of("student", "alumni", "admin")),
 
+            // NOTIFICATIONS
+            new RoleRule("GET", "/notifications", List.of("student", "alumni", "admin")),
+
 
 
             // APPLY JOB
             new RoleRule("POST", "/jobs/*/apply", List.of("student", "alumni")),
 
-            // EVENTS
-            new RoleRule("POST", "/events", List.of("admin")),
-            new RoleRule("GET", "/events", List.of("student", "alumni", "admin")),
+
 
             // USERS
             new RoleRule("GET", "/users", List.of("student", "alumni", "admin")),
