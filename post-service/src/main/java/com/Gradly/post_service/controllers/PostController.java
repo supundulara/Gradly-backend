@@ -1,6 +1,8 @@
 package com.Gradly.post_service.controllers;
 
+import com.Gradly.post_service.dto.CommentRequest;
 import com.Gradly.post_service.dto.PostResponse;
+import com.Gradly.post_service.models.Comment;
 import com.Gradly.post_service.models.Post;
 import com.Gradly.post_service.service.PostService;
 import org.springframework.web.bind.annotation.*;
@@ -65,5 +67,18 @@ public class PostController {
     @GetMapping("/{postId}/likes/count")
     public long getLikeCount(@PathVariable String postId){
         return postService.getLikeCount(postId);
+    }
+    @PostMapping("/{postId}/comments")
+    public Comment addComment(
+            @PathVariable String postId,
+            @RequestBody CommentRequest request,
+            @RequestHeader("X-User-Id") String userId){
+
+        return postService.addComment(postId,userId,request.getContent());
+    }
+
+    @GetMapping("/{postId}/comments")
+    public List<Comment> getComments(@PathVariable String postId){
+        return postService.getComments(postId);
     }
 }

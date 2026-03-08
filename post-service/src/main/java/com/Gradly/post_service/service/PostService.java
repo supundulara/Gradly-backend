@@ -1,8 +1,10 @@
 package com.Gradly.post_service.service;
 
 import com.Gradly.post_service.dto.PostResponse;
+import com.Gradly.post_service.models.Comment;
 import com.Gradly.post_service.models.Like;
 import com.Gradly.post_service.models.Post;
+import com.Gradly.post_service.repository.CommentRepository;
 import com.Gradly.post_service.repository.LikeRepository;
 import com.Gradly.post_service.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
+        this.commentRepository = commentRepository;
     }
 
     public Post createPost(Post post){
@@ -46,6 +50,20 @@ public class PostService {
     public long getLikeCount(String postId){
         return likeRepository.countByPostId(postId);
     }
+    public Comment addComment(String postId, String userId, String content){
+
+        Comment comment = Comment.builder()
+                .postId(postId)
+                .userId(userId)
+                .content(content)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return commentRepository.save(comment);
+    }
+    public List<Comment> getComments(String postId){
+        return commentRepository.findByPostId(postId);
+    }
 
     public List<PostResponse> getAllPosts(){
 
@@ -59,6 +77,7 @@ public class PostService {
                         .imageUrl(post.getImageUrl())
                         .createdAt(post.getCreatedAt())
                         .likeCount(likeRepository.countByPostId(post.getId()))
+                        .commentCount(commentRepository.countByPostId(post.getId()))
                         .build())
                 .toList();
     }
@@ -68,15 +87,14 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow();
 
-        long likeCount = likeRepository.countByPostId(id);
-
         return PostResponse.builder()
                 .id(post.getId())
                 .authorId(post.getAuthorId())
                 .content(post.getContent())
                 .imageUrl(post.getImageUrl())
                 .createdAt(post.getCreatedAt())
-                .likeCount(likeCount)
+                .likeCount(likeRepository.countByPostId(id))
+                .commentCount(commentRepository.countByPostId(id))
                 .build();
     }
 

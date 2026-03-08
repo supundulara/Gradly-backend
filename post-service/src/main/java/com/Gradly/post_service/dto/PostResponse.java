@@ -15,4 +15,5 @@ public class PostResponse {
     private String imageUrl;
     private LocalDateTime createdAt;
     private long likeCount;
+    private long commentCount;
 }
