@@ -2,6 +2,7 @@ package com.Gradly.opportunity_service.service;
 
 import com.Gradly.opportunity_service.client.UserClient;
 import com.Gradly.opportunity_service.dto.CreateEventRequest;
+import com.Gradly.opportunity_service.dto.EventNotificationMessage;
 import com.Gradly.opportunity_service.dto.EventResponse;
 import com.Gradly.opportunity_service.dto.UserResponse;
 import com.Gradly.opportunity_service.model.Event;
@@ -22,6 +23,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserClient userClient;
     private final EventRSVPRepository eventRSVPRepository;
+    private final EventPublisher eventPublisher;
 
     public EventResponse createEvent(CreateEventRequest request, String userId) {
 
@@ -35,6 +37,14 @@ public class EventService {
         event.setCreatedAt(LocalDateTime.now());
 
         Event saved = eventRepository.save(event);
+
+        eventPublisher.publishEvent(
+                EventNotificationMessage.builder()
+                        .eventId(saved.getId())
+                        .title(saved.getTitle())
+                        .createdBy(saved.getCreatedBy())
+                        .build()
+        );
 
         return mapToResponse(saved);
     }

@@ -15,5 +15,6 @@
         <module>service-discovery</module>
         <module>user-service</module>
         <module>opportunity-service</module>
+        <module>notification-service</module>
     </modules>
 </project>
