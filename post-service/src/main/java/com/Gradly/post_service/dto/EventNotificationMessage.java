@@ -1,9 +1,7 @@
-package com.Gradly.notification_service.dto;
+package com.Gradly.post_service.dto;
 
 import lombok.Builder;
 import lombok.Data;
-
-
 
 @Data
 @Builder
@@ -11,22 +9,10 @@ public class EventNotificationMessage {
 
     private String type;
 
-    // Target entity
-    private String targetId;
-
-    // Event related
-    private String eventId;
-    private String eventTitle;
-
-    // Post related
     private String postId;
 
-    // Users
     private String creatorId;
     private String creatorName;
-
-    private String attendeeId;
-    private String attendeeName;
 
     private String actorId;
     private String actorName;

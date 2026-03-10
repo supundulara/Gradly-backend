@@ -30,17 +30,33 @@ public class EventNotificationListener {
             notification.setCreatorName(message.getCreatorName());
             notification.setMessage("created a new event");
 
-        } else if ("EVENT_RSVP".equals(message.getType())) {
+        }
+        else if ("EVENT_RSVP".equals(message.getType())) {
 
             notification.setActorName(message.getAttendeeName());
             notification.setCreatorName(message.getCreatorName());
             notification.setMessage("is attending your event");
 
-        } else if ("EVENT_RSVP_CANCELLED".equals(message.getType())) {
+        }
+        else if ("EVENT_RSVP_CANCELLED".equals(message.getType())) {
 
             notification.setActorName(message.getAttendeeName());
             notification.setCreatorName(message.getCreatorName());
             notification.setMessage("cancelled attendance for your event");
+
+        }
+        else if ("POST_LIKE".equals(message.getType())) {
+
+            notification.setActorName(message.getActorName());
+            notification.setCreatorName(message.getCreatorName());
+            notification.setMessage("liked your post");
+
+        }
+        else if ("POST_COMMENT".equals(message.getType())) {
+
+            notification.setActorName(message.getActorName());
+            notification.setCreatorName(message.getCreatorName());
+            notification.setMessage("commented on your post");
 
         }
 

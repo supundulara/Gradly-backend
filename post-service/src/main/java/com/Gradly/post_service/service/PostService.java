@@ -1,6 +1,7 @@
 package com.Gradly.post_service.service;
 
 import com.Gradly.post_service.dto.CreatePostRequest;
+import com.Gradly.post_service.dto.EventNotificationMessage;
 import com.Gradly.post_service.dto.PostResponse;
 import com.Gradly.post_service.dto.UserResponse;
 import com.Gradly.post_service.models.Comment;
@@ -22,12 +23,14 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final UserClient userClient;
+    private final EventPublisher eventPublisher;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, CommentRepository commentRepository, UserClient userClient) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, CommentRepository commentRepository, UserClient userClient, EventPublisher eventPublisher) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.commentRepository = commentRepository;
         this.userClient = userClient;
+        this.eventPublisher = eventPublisher;
     }
 
     public Post createPost(CreatePostRequest request, String userId) {
@@ -55,6 +58,26 @@ public class PostService {
                 .build();
 
         likeRepository.save(like);
+
+        // Get post
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Get users
+        UserResponse actor = userClient.getUser(userId);
+        UserResponse creator = userClient.getUser(post.getAuthorId());
+
+        // Publish notification event
+        eventPublisher.publishEvent(
+                EventNotificationMessage.builder()
+                        .type("POST_LIKE")
+                        .postId(postId)
+                        .creatorId(post.getAuthorId())
+                        .creatorName(creator.getName())
+                        .actorId(userId)
+                        .actorName(actor.getName())
+                        .build()
+        );
     }
     public void unlikePost(String postId, String userId){
 
@@ -76,7 +99,28 @@ public class PostService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        // Get post
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Post owner
+        UserResponse creator = userClient.getUser(post.getAuthorId());
+
+        // Publish notification
+        eventPublisher.publishEvent(
+                EventNotificationMessage.builder()
+                        .type("POST_COMMENT")
+                        .postId(postId)
+                        .creatorId(post.getAuthorId())
+                        .creatorName(creator.getName())
+                        .actorId(userId)
+                        .actorName(user.getName())
+                        .build()
+        );
+
+        return savedComment;
     }
     public List<Comment> getComments(String postId){
         return commentRepository.findByPostId(postId);

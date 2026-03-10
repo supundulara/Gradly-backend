@@ -16,5 +16,6 @@
         <module>user-service</module>
         <module>opportunity-service</module>
         <module>notification-service</module>
+        <module>messaging-service</module>
     </modules>
 </project>
