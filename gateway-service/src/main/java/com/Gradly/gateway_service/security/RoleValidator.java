@@ -26,6 +26,9 @@ public class RoleValidator {
             // NOTIFICATIONS
             new RoleRule("GET", "/notifications", List.of("student", "alumni", "admin")),
 
+            // MESSAGING
+            new RoleRule("GET", "/conversations", List.of("student", "alumni", "admin")),
+            new RoleRule("POST", "/conversations", List.of("student", "alumni", "admin")),
 
 
             // APPLY JOB

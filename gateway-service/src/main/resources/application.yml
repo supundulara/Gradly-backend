@@ -7,29 +7,34 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/**
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/users/**
 
-        - id: post-service
-          uri: lb://POST-SERVICE
-          predicates:
-            - Path=/posts/**
-        - id: opportunity-service
-          uri: lb://OPPORTUNITY-SERVICE
-          predicates:
-            - Path=/jobs/**,/events/**
-        - id: notification-service
-          uri: lb://NOTIFICATION-SERVICE
-          predicates:
-            - Path=/notifications/**
+            - id: post-service
+              uri: lb://POST-SERVICE
+              predicates:
+                - Path=/posts/**
 
-        - id: messaging-service
-          uri: lb://MESSAGING-SERVICE
-          predicates:
-            - Path=/conversations/**
+            - id: opportunity-service
+              uri: lb://OPPORTUNITY-SERVICE
+              predicates:
+                - Path=/jobs/**,/events/**
+
+            - id: notification-service
+              uri: lb://NOTIFICATION-SERVICE
+              predicates:
+                - Path=/notifications/**
+
+            - id: messaging-service
+              uri: lb://MESSAGING-SERVICE
+              predicates:
+                - Path=/conversations/**
+
 eureka:
   client:
     service-url:
