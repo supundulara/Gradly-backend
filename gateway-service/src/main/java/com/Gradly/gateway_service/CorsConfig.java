@@ -16,12 +16,7 @@ public class CorsConfig {
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
         // allow any localhost port (http/https) and 127.0.0.1
-        config.setAllowedOriginPatterns(Arrays.asList(
-            "http://localhost:*",
-            "https://localhost:*",
-            "http://127.0.0.1:*",
-            "https://127.0.0.1:*"
-        ));
+        config.addAllowedOriginPattern("*");
         config.addAllowedMethod("*");          // allow all HTTP methods including POST, PUT, PATCH, DELETE, OPTIONS
         config.addAllowedHeader("*");          // allow any header
         config.setAllowCredentials(true);
