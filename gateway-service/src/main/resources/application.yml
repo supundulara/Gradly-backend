@@ -35,6 +35,11 @@ spring:
               predicates:
                 - Path=/conversations/**
 
+            - id: messaging-service-ws
+              uri: lb:ws://MESSAGING-SERVICE
+              predicates:
+                - Path=/ws/**
+
 eureka:
   client:
     service-url:

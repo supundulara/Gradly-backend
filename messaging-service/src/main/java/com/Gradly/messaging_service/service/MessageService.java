@@ -5,6 +5,7 @@ import com.Gradly.messaging_service.model.Conversation;
 import com.Gradly.messaging_service.model.Message;
 import com.Gradly.messaging_service.repository.ConversationRepository;
 import com.Gradly.messaging_service.repository.MessageRepository;
+import com.Gradly.messaging_service.websocket.WebSocketBroadcaster;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
     private final UserClient userClient;
+    private final WebSocketBroadcaster webSocketBroadcaster;
 
     public List<Message> getMessages(String conversationId) {
 
@@ -51,8 +53,10 @@ public class MessageService {
 
         conversation.setLastMessage(content);
         conversation.setUpdatedAt(LocalDateTime.now());
-
         conversationRepository.save(conversation);
+
+        // Broadcast the new message to all connected WebSocket clients in this conversation
+        webSocketBroadcaster.broadcastMessage(conversationId, savedMessage);
 
         return savedMessage;
     }
