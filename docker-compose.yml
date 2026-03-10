@@ -1,0 +1,133 @@
+version: "3.8"
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gradly-network
+
+  service-discovery:
+    build: ./service-discovery
+    container_name: service-discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - gradly-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_URI: ${EUREKA_URI}
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+    networks:
+      - gradly-network
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      USER_DB_URI: ${USER_DB_URI}
+      EUREKA_URI: ${EUREKA_URI}
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+    networks:
+      - gradly-network
+
+  post-service:
+    build: ./post-service
+    container_name: post-service
+    ports:
+      - "8082:8082"
+    environment:
+      POST_DB_URI: ${POST_DB_URI}
+      EUREKA_URI: ${EUREKA_URI}
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+    networks:
+      - gradly-network
+
+  opportunity-service:
+    build: ./opportunity-service
+    container_name: opportunity-service
+    ports:
+      - "8083:8083"
+    environment:
+      OPPORTUNITY_DB_URI: ${OPPORTUNITY_DB_URI}
+      EUREKA_URI: ${EUREKA_URI}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - gradly-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8084:8084"
+    environment:
+      NOTIFICATION_DB_URI: ${NOTIFICATION_DB_URI}
+      EUREKA_URI: ${EUREKA_URI}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - gradly-network
+
+  messaging-service:
+    build: ./messaging-service
+    container_name: messaging-service
+    ports:
+      - "8085:8085"
+    environment:
+      MESSAGE_DB_URI: ${MESSAGE_DB_URI}
+      EUREKA_URI: ${EUREKA_URI}
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+    networks:
+      - gradly-network
+
+networks:
+  gradly-network:
+    driver: bridge
+
