@@ -118,19 +118,27 @@ jobs:
               sudo usermod -aG docker $USER
             fi
 
-            # Pull + build images and restart all services
-            # Stop and remove existing stack
+            # Stop and remove the existing stack (ignore errors if not running)
             sudo docker-compose down --remove-orphans || true
-            
-            # Remove any remaining conflicting containers
-            sudo docker rm -f rabbitmq service-discovery 2>/dev/null || true
-            
-            # Start fresh containers
+
+            # Force-remove any leftover named containers that could cause conflicts
+            sudo docker rm -f \
+              rabbitmq \
+              service-discovery \
+              gateway-service \
+              user-service \
+              post-service \
+              opportunity-service \
+              notification-service \
+              messaging-service \
+              2>/dev/null || true
+
+            # Build images and start all services fresh
             sudo docker-compose up -d --build
-            
-            # Clean unused images
+
+            # Clean up dangling images to save disk space
             sudo docker image prune -f
-            
+
             # Show running containers
             sudo docker ps
           EOF
