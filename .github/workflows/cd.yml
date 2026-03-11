@@ -80,29 +80,6 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/Gradly-backend/
 
-      # ── Write the .env file on EC2 from GitHub Secrets ──
-      - name: Write .env on EC2
-        run: |
-          # Build the .env content locally, base64-encode it, then decode on EC2.
-          # This prevents the remote shell from mangling special characters
-          # ($, @, +, /) present in MongoDB Atlas connection strings.
-          ENV_CONTENT=$(printf '%s\n' \
-            "USER_DB_URI=${{ secrets.USER_DB_URI }}" \
-            "POST_DB_URI=${{ secrets.POST_DB_URI }}" \
-            "OPPORTUNITY_DB_URI=${{ secrets.OPPORTUNITY_DB_URI }}" \
-            "MESSAGE_DB_URI=${{ secrets.MESSAGE_DB_URI }}" \
-            "NOTIFICATION_DB_URI=${{ secrets.NOTIFICATION_DB_URI }}" \
-            "RABBITMQ_HOST=rabbitmq" \
-            "RABBITMQ_PORT=5672" \
-            "RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}" \
-            "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" \
-            "EUREKA_URI=http://service-discovery:8761/eureka" \
-          )
-          ENCODED=$(echo "$ENV_CONTENT" | base64 -w 0)
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "echo '$ENCODED' | base64 -d > /home/${{ secrets.EC2_USER }}/Gradly-backend/.env && echo '.env written successfully' && grep -c 'mongodb+srv' /home/${{ secrets.EC2_USER }}/Gradly-backend/.env && echo 'MongoDB URIs verified'"
 
       # ── SSH into EC2 and bring up Docker Compose ──
       - name: Deploy with Docker Compose
