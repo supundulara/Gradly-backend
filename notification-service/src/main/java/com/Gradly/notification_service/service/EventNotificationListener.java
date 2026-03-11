@@ -16,7 +16,7 @@ public class EventNotificationListener {
 
     private final NotificationRepository notificationRepository;
 
-    @RabbitListener(queues = "event.notifications")
+    @RabbitListener(queues = RabbitMQConfig.EVENT_QUEUE)
     public void handleEvent(EventNotificationMessage message) {
 
         Notification notification = new Notification();
