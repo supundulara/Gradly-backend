@@ -78,7 +78,7 @@ jobs:
             --exclude '.env' \
             --exclude '**/target/' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-            ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/gradly/
+            ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/Gradly-backend/
 
       # ── Write the .env file on EC2 from GitHub Secrets ──
       - name: Write .env on EC2
@@ -86,7 +86,7 @@ jobs:
           ssh -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "cat > /home/${{ secrets.EC2_USER }}/gradly/.env << 'ENVEOF'
+            "cat > /home/${{ secrets.EC2_USER }}/Gradly-backend/.env << ENVEOF
           USER_DB_URI=${{ secrets.USER_DB_URI }}
           POST_DB_URI=${{ secrets.POST_DB_URI }}
           OPPORTUNITY_DB_URI=${{ secrets.OPPORTUNITY_DB_URI }}
@@ -105,9 +105,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
             set -e
-            cd /home/${{ secrets.EC2_USER }}/gradly
+            cd /home/${{ secrets.EC2_USER }}/Gradly-backend
 
             # Install Docker if not present
             if ! command -v docker &> /dev/null; then
