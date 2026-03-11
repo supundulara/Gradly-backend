@@ -119,10 +119,13 @@ jobs:
             fi
 
             # Pull + build images and restart all services
-            # Remove ALL existing containers (running or stopped)
-            sudo docker rm -f $(sudo docker ps -aq) 2>/dev/null || true
+            # Stop and remove existing stack
+            sudo docker-compose down --remove-orphans || true
             
-            # Start services
+            # Remove any remaining conflicting containers
+            sudo docker rm -f rabbitmq service-discovery 2>/dev/null || true
+            
+            # Start fresh containers
             sudo docker-compose up -d --build
             
             # Clean unused images
