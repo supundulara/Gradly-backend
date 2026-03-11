@@ -86,19 +86,19 @@ jobs:
           ssh -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "cat > /home/${{ secrets.EC2_USER }}/Gradly-backend/.env << ENVEOF
-          USER_DB_URI=${{ secrets.USER_DB_URI }}
-          POST_DB_URI=${{ secrets.POST_DB_URI }}
-          OPPORTUNITY_DB_URI=${{ secrets.OPPORTUNITY_DB_URI }}
-          MESSAGE_DB_URI=${{ secrets.MESSAGE_DB_URI }}
-          NOTIFICATION_DB_URI=${{ secrets.NOTIFICATION_DB_URI }}
-          ANALYTICS_DB_URI=${{ secrets.ANALYTICS_DB_URI }}
-          RABBITMQ_HOST=rabbitmq
-          RABBITMQ_PORT=5672
-          RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
-          RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
-          EUREKA_URI=http://service-discovery:8761/eureka
-          ENVEOF"
+            "printf '%s\n' \
+              'USER_DB_URI=${{ secrets.USER_DB_URI }}' \
+              'POST_DB_URI=${{ secrets.POST_DB_URI }}' \
+              'OPPORTUNITY_DB_URI=${{ secrets.OPPORTUNITY_DB_URI }}' \
+              'MESSAGE_DB_URI=${{ secrets.MESSAGE_DB_URI }}' \
+              'NOTIFICATION_DB_URI=${{ secrets.NOTIFICATION_DB_URI }}' \
+              'ANALYTICS_DB_URI=${{ secrets.ANALYTICS_DB_URI }}' \
+              'RABBITMQ_HOST=rabbitmq' \
+              'RABBITMQ_PORT=5672' \
+              'RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}' \
+              'RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}' \
+              'EUREKA_URI=http://service-discovery:8761/eureka' \
+              > /home/${{ secrets.EC2_USER }}/Gradly-backend/.env"
 
       # ── SSH into EC2 and bring up Docker Compose ──
       - name: Deploy with Docker Compose
