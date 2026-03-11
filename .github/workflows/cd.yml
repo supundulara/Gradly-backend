@@ -119,9 +119,16 @@ jobs:
             fi
 
             # Pull + build images and restart all services
-            sudo docker-compose down
+            # Remove ALL existing containers (running or stopped)
+            sudo docker rm -f $(sudo docker ps -aq) 2>/dev/null || true
+            
+            # Start services
             sudo docker-compose up -d --build
+            
+            # Clean unused images
             sudo docker image prune -f
-            sudo docker-compose ps
+            
+            # Show running containers
+            sudo docker ps
           EOF
 
